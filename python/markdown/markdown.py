@@ -2,20 +2,19 @@ import re
 
 
 def parsing_headers_level(data):
-    if re.match('###### (.*)', data) is not None:
-        return '<h6>' + data[7:] + '</h6>'
-    elif re.match('##### (.*)', data) is not None:
-        return '<h5>' + data[6:] + '</h5>'
-    elif re.match('#### (.*)', data) is not None:
-        return '<h4>' + data[5:] + '</h4>'
-    elif re.match('### (.*)', data) is not None:
-        return '<h3>' + data[4:] + '</h3>'
-    elif re.match('## (.*)', data) is not None:
-        return '<h2>' + data[3:] + '</h2>'
-    elif re.match('# (.*)', data) is not None:
-        return '<h1>' + data[2:] + '</h1>'
-    else:
-        return data
+    headers = {
+        '# (.*)': f'<h1>{data[2:]}</h1>',
+        '## (.*)': f'<h2>{data[3:]}</h2>',
+        '### (.*)': f'<h3>{data[4:]}</h3>',
+        '#### (.*)': f'<h4>{data[5:]}</h4>',
+        '##### (.*)': f'<h5>{data[6:]}</h5>',
+        '###### (.*)': f'<h6>{data[7:]}</h6>',
+    }
+    for key in headers:
+        if re.match(key, data) is not None:
+            return headers[key]
+    
+    return data
 
 def parse(markdown):
     lines = markdown.split('\n')
