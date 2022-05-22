@@ -10,7 +10,7 @@ EXPECTED_BAKE_TIME = 40
 
 
 # TODO: define the 'bake_time_remaining()' function
-def bake_time_remaining():
+def bake_time_remaining(elapsed_bake_time):
     """Calculate the bake time remaining.
 
     :param elapsed_bake_time: int - baking time already elapsed.
@@ -21,7 +21,7 @@ def bake_time_remaining():
     based on the `EXPECTED_BAKE_TIME`.
     """
 
-    pass
+    return elapsed_bake_time - EXPECTED_BAKE_TIME
 
 
 # TODO: define the 'preparation_time_in_minutes()' function
