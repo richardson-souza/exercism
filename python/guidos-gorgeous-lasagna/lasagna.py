@@ -4,6 +4,7 @@ Learn about Guido, the creator of the Python language: https://en.wikipedia.org/
 """
 
 # TODO: define the 'EXPECTED_BAKE_TIME' constant
+EXPECTED_BAKE_TIME = 40
 # TODO: consider defining the 'PREPARATION_TIME' constant
 #       equal to the time it takes to prepare a single layer
 
