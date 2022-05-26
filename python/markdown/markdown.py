@@ -1,20 +1,22 @@
 import re
 
 
-def parsing_headers_level(data):
-    headers = {
-        '# (.*)': f'<h1>{data[2:]}</h1>',
-        '## (.*)': f'<h2>{data[3:]}</h2>',
-        '### (.*)': f'<h3>{data[4:]}</h3>',
-        '#### (.*)': f'<h4>{data[5:]}</h4>',
-        '##### (.*)': f'<h5>{data[6:]}</h5>',
-        '###### (.*)': f'<h6>{data[7:]}</h6>',
-    }
+def parsing_headers_level(text):
+    headers = {}
+    for i in range(1,7):
+        headers['#'*i + ' (.*)'] = f'<h{i}>{text[i+1:]}</h{i}>'
+
     for key in headers:
-        if re.match(key, data) is not None:
+        if re.match(key, text) is not None:
             return headers[key]
     
-    return data
+    return text
+
+def parsing_italic(match):
+    return f'{match.group(1)}<em>{match.group(2)}</em>{match.group(3)}'
+
+def parsing_bold(match):
+    return f'{match.group(1)}<strong>{match.group(2)}</strong>{match.group(3)}'
 
 def parse(markdown):
     lines = markdown.split('\n')
@@ -32,13 +34,11 @@ def parse(markdown):
                 curr = m.group(1)
                 m1 = re.match('(.*)__(.*)__(.*)', curr)
                 if m1:
-                    curr = m1.group(1) + '<strong>' + \
-                        m1.group(2) + '</strong>' + m1.group(3)
+                    curr = parsing_bold(m1)
                     is_bold = True
                 m1 = re.match('(.*)_(.*)_(.*)', curr)
                 if m1:
-                    curr = m1.group(1) + '<em>' + m1.group(2) + \
-                        '</em>' + m1.group(3)
+                    curr = parsing_italic(m1)
                     is_italic = True
                 i = '<ul><li>' + curr + '</li>'
             else:
@@ -52,11 +52,9 @@ def parse(markdown):
                 if m1:
                     is_italic = True
                 if is_bold:
-                    curr = m1.group(1) + '<strong>' + \
-                        m1.group(2) + '</strong>' + m1.group(3)
+                    curr = parsing_bold(m1)
                 if is_italic:
-                    curr = m1.group(1) + '<em>' + m1.group(2) + \
-                        '</em>' + m1.group(3)
+                    curr = parsing_italic(m1)
                 i = '<li>' + curr + '</li>'
         else:
             if in_list:
@@ -68,10 +66,10 @@ def parse(markdown):
             i = '<p>' + i + '</p>'
         m = re.match('(.*)__(.*)__(.*)', i)
         if m:
-            i = m.group(1) + '<strong>' + m.group(2) + '</strong>' + m.group(3)
+            i = parsing_bold(m)
         m = re.match('(.*)_(.*)_(.*)', i)
         if m:
-            i = m.group(1) + '<em>' + m.group(2) + '</em>' + m.group(3)
+            i = parsing_italic(m)
         if in_list_append:
             i = '</ul>' + i
             in_list_append = False
