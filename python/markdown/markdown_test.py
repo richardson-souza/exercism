@@ -2,7 +2,7 @@ import unittest
 
 from markdown import (
     parse,
-    parsing_headers_level
+    parsing_headers_level,
 )
 
 # Tests adapted from `problem-specifications//canonical-data.json`
