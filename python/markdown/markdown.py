@@ -2,6 +2,7 @@
 """
 
 import re
+from typing import Union
 
 
 STR_BOLD = '(.*)__(.*)__(.*)'
@@ -9,45 +10,27 @@ STR_ITALIC = '(.*)_(.*)_(.*)'
 STR_LIST = r'\* (.*)'
 
 
-def get_bold_text(text: str) -> str:
+def get_bold_text(text: str) -> Union[re.Match, None]:
     """Identify if text has a valid character to be
     recognized as Markdown code for bold '__emphasized__'.
-    :param text: str - Any text.
-    :return: str - Text with character recognized as
-    Markdown code to bold.
     """
-    m = re.match(STR_BOLD, text)
-    if m:
-        return m.group(1)
+    return re.match(STR_BOLD, text)
 
-def get_italic_text(text: str) -> str:
+def get_italic_text(text: str) -> Union[re.Match, None]:
     """Identify if text has a valid character to be
     recognized as Markdown code for talicize ' _italicized_'.
-    :param text: str - Any text.
-    :return: str - Text with character recognized as
-    Markdown code to talicize.
     """
-    m = re.match(STR_ITALIC, text)
-    if m:
-        return m.group(1)
+    return re.match(STR_ITALIC, text)
 
-def get_list_text(text: str) -> str:
+def get_list_text(text: str) -> Union[re.Match, None]:
     """Identify if text has a valid character to be
     recognized as Markdown code for unordered lists '*'.
-    :param text: str - Any text.
-    :return: str - Text with character recognized as
-    Markdown code to unordered lists.
     """
-    m = re.match(STR_LIST, text)
-    if m:
-        return m.group(1)
+    return re.match(STR_LIST, text)
 
 def parsing_headers_level(text: str) -> str:
     """Identify if text has a structurally valid Markdown
     to recognizes up to 6 hash (#).
-
-    :param text: str - Any text.
-    :return: str - Text with valid HTML Section Heading elements.
 
     Function that takes any text and converts it to a section
     header HTML elements if it identifies that text has a
@@ -78,13 +61,13 @@ def parsing_bold(match: re.Match) -> str:
 def parsing_bold_italic(text: str) -> str:
     """
     """
-    m1 = re.match(STR_BOLD, text)
-    if m1:
-        text = parsing_bold(m1)
+    bold_text = get_bold_text(text)
+    if bold_text:
+        text = parsing_bold(bold_text)
 
-    m1 = re.match(STR_ITALIC, text)
-    if m1:
-        text = parsing_italic(m1)
+    italic_text = get_italic_text(text)
+    if italic_text:
+        text = parsing_italic(italic_text)
     return text
 
 def parse(markdown: str) -> str:
@@ -96,14 +79,13 @@ def parse(markdown: str) -> str:
     for i in markdown.split('\n'):
         i = parsing_headers_level(i)
 
-        text = get_list_text(i)
-        if text:
+        match = get_list_text(i)
+        if match:
+            text = parsing_bold_italic(match.group(1))
             if not in_list:
                 in_list = True
-                text = parsing_bold_italic(text)
                 i = '<ul><li>' + text + '</li>'
             else:
-                text = parsing_bold_italic(text)
                 i = '<li>' + text + '</li>'
         else:
             if in_list:
