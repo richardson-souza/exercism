@@ -6,7 +6,7 @@ import re
 
 STR_BOLD = '(.*)__(.*)__(.*)'
 STR_ITALIC = '(.*)_(.*)_(.*)'
-STR_LIST = '\* (.*)'
+STR_LIST = r'\* (.*)'
 
 
 def get_bold_text(text: str) -> str:
@@ -66,12 +66,18 @@ def parsing_headers_level(text: str) -> str:
     return text
 
 def parsing_italic(match: re.Match) -> str:
+    """
+    """
     return f'{match.group(1)}<em>{match.group(2)}</em>{match.group(3)}'
 
 def parsing_bold(match: re.Match) -> str:
+    """
+    """
     return f'{match.group(1)}<strong>{match.group(2)}</strong>{match.group(3)}'
 
 def parsing_bold_italic(text: str) -> str:
+    """
+    """
     m1 = re.match(STR_BOLD, text)
     if m1:
         text = parsing_bold(m1)
@@ -82,6 +88,8 @@ def parsing_bold_italic(text: str) -> str:
     return text
 
 def parse(markdown: str) -> str:
+    """Main function
+    """
     res = ''
     in_list = False
     in_list_append = False
